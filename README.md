@@ -145,7 +145,9 @@ Deploy microservices on Kubernetes with auto-scaling
 Author
 
 Rohith Sarvesaa
+
 PSG College of Technology — Computer Science Engineering(Artificial Intelligence and Machine Learning)
+
 GitHub: https://github.com/rohithrajansarvesaa
 
 Email: rohithrajansarvesaa@gmail.com
