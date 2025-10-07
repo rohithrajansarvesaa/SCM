@@ -1,138 +1,152 @@
-# Project Sentry - Automating Inventory Replenishment
+Project Sentry — Automating Inventory Replenishment
 
-An event-driven inventory replenishment system built with Node.js, TypeScript, MongoDB, and Apache Kafka. This system automates the entire inventory replenishment workflow from alert raising to delivery confirmation through microservices architecture.
+Project Sentry is an event-driven, microservices-based backend system that automates the inventory replenishment lifecycle — from low-stock detection to final delivery confirmation.
+Built with Node.js, TypeScript, MongoDB, and Apache Kafka, it ensures real-time synchronization between stores and warehouses, reducing stockouts and overstocking.
 
-## 📋 Overview
+Overview
 
-Project Sentry automates inventory replenishment by implementing an event-driven architecture that handles:
-- **Stock Alert Management**: Automated alerts when inventory levels are low
-- **Transfer Order Creation**: Automatic order generation based on warehouse availability
-- **Shipment Tracking**: Real-time shipment status updates
-- **Delivery Confirmation**: Final delivery confirmation and status updates
+UrbanStyle Apparel’s supply chain depends on keeping high-demand items available.
+Project Sentry automates this process by implementing an event-driven architecture that handles the four stages of replenishment:
 
-## 🏗️ Architecture
+Stock Alert Management – Automated alerts when product quantity falls below the reorder threshold.
 
-The system follows an event-driven microservices architecture using Apache Kafka for message streaming:
+Transfer Order Creation – Intelligent order creation based on warehouse stock availability.
 
-![API and Data Schema](./assets/api-and-data-schema.png)
+Shipment Tracking – Real-time updates as items move from warehouse to store.
 
-### Event Flow
-1. **Stage 1: Raising Stock Alert** → Produces to `transfer-order` topic
-2. **Stage 2: Transfer Create Order** → Produces to `shipment` topic  
-3. **Stage 3: Shipment** → Produces to `delivery` topic
-4. **Stage 4: Confirm Delivery** → Final status update
+Delivery Confirmation – Automatic inventory updates upon receipt at the store.
 
-## 🛠️ Tech Stack
+System Architecture
 
-- **Backend**: Node.js, TypeScript, Express.js
-- **Database**: MongoDB
-- **Message Broker**: Apache Kafka
+Project Sentry follows an event-driven microservices architecture, using Apache Kafka for message streaming and MongoDB as the digital thread (single source of truth).
 
-## 🚀 Installation & Setup
+Event Flow
+Stage	Description	Kafka Topic
+1	Raise Stock Alert	transfer-order
+2	Create Transfer Order	shipment
+3	Process Shipment	delivery
+4	Confirm Delivery	— (final update)
 
-### Prerequisites
-- Node.js (v18 or higher)
-- Docker & Docker Compose
-- npm or yarn
+Each stage produces an event that triggers the next stage in the lifecycle, ensuring smooth and asynchronous coordination between services.
 
-### Option 1: Running Everything in Docker (Recommended)
+Tech Stack
+Category	Technologies
+Backend Framework	Node.js, Express.js, TypeScript
+Database	MongoDB
+Message Broker	Apache Kafka
+Containerization	Docker, Docker Compose
+Environment	.env configuration support
+Setup and Installation
+Prerequisites
 
-#### 1. Start all services using Docker Compose
-```bash
+Ensure you have the following installed:
+
+Node.js ≥ v18
+
+Docker and Docker Compose
+
+npm or yarn
+
+Option 1: Run the Entire Stack via Docker (Recommended)
 # Build all services
 docker-compose build
 
-# Start all the services
+# Start the stack
 docker-compose up -d
 
-# Check if services are running
+# Check service status
 docker-compose ps
 
-# View logs
+# View backend logs
 docker-compose logs -f backend
-```
 
-**Note**: The application will run on `http://localhost:3003`
 
-### Option 2: Running Backend Locally (Development)
+The application runs on: http://localhost:3003
 
-#### 1. Start only MongoDB and Kafka in Docker
-```bash
+Option 2: Run Backend Locally (Development Mode)
+
+Start only MongoDB and Kafka using Docker:
+
 docker-compose up mongo broker -d
-```
 
-#### 2. Setup and run the backend locally
-```bash
-# Install dependencies
+
+Install dependencies and start the backend:
+
+# Install Node dependencies
 npm install
 
-# Setup environment variables for local development
+# Copy environment template
 cp .env.template .env
 
-# Start the development server
+# Start development server
 npm run dev
-```
 
-**Note**: The application will run on `http://localhost:3003`
 
-### 3. Populate the warehouse with sample items
+The application runs on: http://localhost:3003
 
-Choose the appropriate command based on your terminal:
+Populate Warehouse Items (Sample Data Setup)
 
-#### Using PowerShell (Recommended for Windows):
-```powershell
+You can add initial items to the warehouse database using the following commands (choose based on your OS/terminal).
+
+Windows PowerShell
 $body = @'
 {
     "items":[
-        {
-            "item_name": "Zara Oversized Blazer",
-            "quantity":150,
-            "price":79,
-            "description":"Black oversized blazer with shoulder pads"
-        },
-        {
-            "item_name": "H&M Skinny Jeans",
-            "quantity":200,
-            "price":29,
-            "description":"High-waisted skinny fit denim jeans"
-        },
-        {
-            "item_name": "Forever 21 Crop Top",
-            "quantity":180,
-            "price":12,
-            "description":"Basic cotton crop top in various colors"
-        },
-        {
-            "item_name": "Shein Maxi Dress",
-            "quantity":120,
-            "price":24,
-            "description":"Floral print summer maxi dress"
-        },
-        {
-            "item_name": "Urban Outfitters Mom Jeans",
-            "quantity":100,
-            "price":69,
-            "description":"Vintage-style high-waisted mom jeans"
-        }
+        {"item_name":"Zara Oversized Blazer","quantity":150,"price":79,"description":"Black oversized blazer with shoulder pads"},
+        {"item_name":"H&M Skinny Jeans","quantity":200,"price":29,"description":"High-waisted skinny fit denim jeans"},
+        {"item_name":"Forever 21 Crop Top","quantity":180,"price":12,"description":"Basic cotton crop top in various colors"},
+        {"item_name":"Shein Maxi Dress","quantity":120,"price":24,"description":"Floral print summer maxi dress"},
+        {"item_name":"Urban Outfitters Mom Jeans","quantity":100,"price":69,"description":"Vintage-style high-waisted mom jeans"}
     ]
 }
 '@
 
 Invoke-RestMethod -Uri "http://localhost:3003/api/warehouse/additems" -Method POST -Body $body -ContentType "application/json"
-```
 
-#### Using Command Prompt or Git Bash:
-```bash
+Windows Command Prompt or Git Bash
 curl -X POST http://localhost:3003/api/warehouse/additems ^
 -H "Content-Type: application/json" ^
 -d "{\"items\":[{\"item_name\":\"Zara Oversized Blazer\",\"quantity\":150,\"price\":79,\"description\":\"Black oversized blazer with shoulder pads\"},{\"item_name\":\"H&M Skinny Jeans\",\"quantity\":200,\"price\":29,\"description\":\"High-waisted skinny fit denim jeans\"},{\"item_name\":\"Forever 21 Crop Top\",\"quantity\":180,\"price\":12,\"description\":\"Basic cotton crop top in various colors\"},{\"item_name\":\"Shein Maxi Dress\",\"quantity\":120,\"price\":24,\"description\":\"Floral print summer maxi dress\"},{\"item_name\":\"Urban Outfitters Mom Jeans\",\"quantity\":100,\"price\":69,\"description\":\"Vintage-style high-waisted mom jeans\"}]}"
-```
 
-#### Using Unix/Linux/macOS Terminal:
-```bash
+macOS or Linux Terminal
 curl -X POST http://localhost:3003/api/warehouse/additems \
 -H "Content-Type: application/json" \
 -d '{"items":[{"item_name":"Zara Oversized Blazer","quantity":150,"price":79,"description":"Black oversized blazer with shoulder pads"},{"item_name":"H&M Skinny Jeans","quantity":200,"price":29,"description":"High-waisted skinny fit denim jeans"},{"item_name":"Forever 21 Crop Top","quantity":180,"price":12,"description":"Basic cotton crop top in various colors"},{"item_name":"Shein Maxi Dress","quantity":120,"price":24,"description":"Floral print summer maxi dress"},{"item_name":"Urban Outfitters Mom Jeans","quantity":100,"price":69,"description":"Vintage-style high-waisted mom jeans"}]}'
-```
 
+API Highlights
+Endpoint	Method	Description
+/api/alerts	POST	Raise a low-stock alert
+/api/transfer/create	POST	Generate transfer order
+/api/shipment/update	POST	Update shipment status
+/api/delivery/confirm	POST	Confirm store delivery
+/api/warehouse/additems	POST	Add sample warehouse items
+Key Features
+
+Event-driven lifecycle management using Kafka topics
+
+Digital thread persistence in MongoDB
+
+Unique identifiers for each replenishment order
+
+Real-time stock updates and traceability
+
+Stateless REST API design with microservice scalability
+
+Future Enhancements
+
+Add JWT authentication for service communication
+
+Implement Prometheus and Grafana for observability
+
+Integrate predictive analytics for demand forecasting
+
+Deploy microservices on Kubernetes with auto-scaling
+
+Author
+
+Rohith Sarvesaa
+PSG College of Technology — Computer Science Engineering(Artificial Intelligence and Machine Learning)
+GitHub: https://github.com/rohithrajansarvesaa
+
+Email: rohithrajansarvesaa@gmail.com
 
