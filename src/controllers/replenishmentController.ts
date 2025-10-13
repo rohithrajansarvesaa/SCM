@@ -14,10 +14,11 @@ const raiseAlert = async (req: Request, res: Response): Promise<void> =>{
             res.status(400).json({"error":"Shop ID and Required Items required"});
             return;
         }
-        const replenishment = await replenishmentModel.insertOne(
+        const replenishment = await replenishmentModel.create(
             {
                 store_id: store_id,
-                required_items: required_items
+                required_items: required_items,
+                status: order_status.ALERT_RAISED
             }
         );
         const messageData = {

@@ -12,10 +12,13 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rohithrajansarvesaa/SCM.git"
+  },
   "author": "",
   "license": "ISC",
-
-  "homepage": "https://github.com/rohithrajansarvesaa/SCM/blob/main/README.md",
+  "bugs": {
+    "url": "https://github.com/rohithrajansarvesaa/SCM/issues"
+  },
+  "homepage": "https://github.com/rohithrajansarvesaa/SCM#readme",
   "description": "",
   "devDependencies": {
     "@types/node": "^24.6.1",
